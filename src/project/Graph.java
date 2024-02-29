@@ -9,7 +9,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class Graph {
-	private Node nodes;
+	private Tri node;
 	private int[] multiplicities;
 	private float[] mediane;
 	private int[] count;
@@ -20,7 +20,7 @@ public class Graph {
 		sc.useLocale(Locale.US);
 		String[] header = sc.nextLine().split(" ");
 		nfixe = Integer.parseInt(header[2]);
-		nodes = new Node(0);
+		node = new Tri();
 		mediane = new float[Integer.parseInt(header[3])];
 		multiplicities = new int[Integer.parseInt(header[3])];
 		count = new int[Integer.parseInt(header[3])];
@@ -45,13 +45,13 @@ public class Graph {
 				}
 				if (count[ileaf] == 1 + multiplicities[ileaf]/2) {
 					mediane[ileaf] = (mediane[ileaf]+inode)/2;
-					nodes.add(new Leaf(ileaf), mediane[ileaf]);
+					node.add(new Leaf(ileaf), mediane[ileaf]);
 				}
 			}
 			else {
 				if (count[ileaf] == 1+multiplicities[ileaf]/2) {
 					mediane[ileaf] = inode;
-					nodes.add(new Leaf(ileaf), mediane[ileaf]);
+					node.add(new Leaf(ileaf), mediane[ileaf]);
 				}
 			}
 		}
@@ -62,10 +62,9 @@ public class Graph {
 		int[] res = new int[mediane.length];
 		int[] isused = new int[mediane.length];
 		int idx = 0;
-		Node n = nodes;
-		SortedSet<Float> keySet = new TreeSet<>(n.ln.keySet());
+		SortedSet<Float> keySet = new TreeSet<>(node.ln.keySet());
 		for (float k:keySet) {
-			ArrayList<Leaf> ll = n.ln.get(k);
+			ArrayList<Leaf> ll = node.ln.get(k);
 			for (Leaf l:ll) {
 				if (isused[l.id]==0) {
 					res[idx] = l.id + 1 + nfixe;
