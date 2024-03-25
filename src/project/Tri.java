@@ -1,22 +1,14 @@
 package project;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+public class Tri<A,B,C> {
+    public final A a;
+    public final B b;
+    public final C c;
 
-public class Tri {
-	public HashMap<Float, ArrayList<Leaf>> ln;
-	public HashMap<Float, Boolean> lb;
-	
-	public Tri() {
-		this.ln = new HashMap<Float, ArrayList<Leaf>>();
-	}
-	public void add(Leaf l,float m, Boolean rec) {
-		if (!ln.containsKey(m)) {
-			this.ln.put(m, new ArrayList<Leaf>());
-		}
-		if (rec) {
-			this.lb.put(m, rec);
-		}
-		ln.get(m).add(l);		
-	}
-}
+    
+    public Tri(A _a, B _b, C _c) {
+        this.a = _a;
+        this.b = _b;
+        this.c = _c;
+    }
+};

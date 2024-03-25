@@ -17,6 +17,9 @@ public class Heuristic {
 	int maxcount = 0;
 	
 	public Heuristic(String filename) throws FileNotFoundException {
+		// Creates the data structure necessary to apply the greedy algorithm.
+		// The graph is represented as a list of nodes.
+		
 		Scanner sc = new Scanner(new File(filename));
 		sc.useLocale(Locale.US);
 		String[] header = sc.nextLine().split(" ");
@@ -36,102 +39,24 @@ public class Heuristic {
 		sc.close();
 	}
 	
-	private int Compare(Node n1, Node n2) {
-		int mult2 = n2.leafs.size();
-		int mult = n1.leafs.size();
-		if (mult2==0 || mult==0) return 1;
-		if (mult2%2==0) {
-			int up2 = n2.leafs.get(mult2/2).id;
-			int down2 = n2.leafs.get(-1+mult2/2).id;
-			if (mult%2==0) {
-				int up1 = n1.leafs.get(mult/2).id;
-				int down1 = n1.leafs.get(-1+mult/2).id;
-				if ((up1>up2 && down1<down2) && n2.leafs.size()>2) {
-					LinkedList<Leaf> l2 = (LinkedList<Leaf>) n2.leafs.clone();
-					l2.remove(mult2/2);
-					l2.remove(-1+mult2/2);
-					return Compare(n1, new Node(n2.id, l2));	
-				}
-				else if ((up1<up2 && down1>down2) && n1.leafs.size()>2) {
-					LinkedList<Leaf> l1 = (LinkedList<Leaf>) n1.leafs.clone();
-					l1.remove(mult/2);
-					l1.remove(-1+mult/2);
-					return Compare(new Node(n1.id,l1), n2);	
-				}
-				else if ((up1==up2 && down1==down2) && n2.leafs.size()>2 && n1.leafs.size()>2) {
-					LinkedList<Leaf> l1 = (LinkedList<Leaf>) n1.leafs.clone();
-					LinkedList<Leaf> l2 = (LinkedList<Leaf>) n2.leafs.clone();
-					l1.remove(mult/2);
-					l1.remove(-1+mult/2);
-					l2.remove(mult2/2);
-					l2.remove(-1+mult2/2);
-					return Compare(new Node(n1.id,l1), new Node(n2.id, l2));	
-				}
-				else if (up1>=up2 && down1>down2 || up1>up2 && down1>=down2) {
-					return 1;
-				}
-				else if (up1<=up2 && down1<down2 || up1<up2 && down1<=down2) return -1;
-				else return 0;
-			}
-			else {
-				int m = n1.leafs.get(mult/2).id;
-				if (m>=up2) {
-					return 1;	
-				}
-				else if (m<=down2) {
-					return -1;	
-				}
-				else if (n1.leafs.size()>1) {
-					LinkedList<Leaf> l1 = (LinkedList<Leaf>) n1.leafs.clone();
-					l1.remove(mult/2);
-					return Compare(new Node(n1.id,l1), n2);	
-				}
-	
-				else return 0;
-			}
-		}
-		else {
-			if (mult%2==0){
-				return -Compare(n2,n1);
-			}
-			else {
-				int m = n1.leafs.get(mult/2).id;
-				int m2 = n2.leafs.get(mult2/2).id;
-				if (m>m2) {
-					return 1;	
-				}
-				else if (m<m2) {
-					return -1;	
-				}
-				else if (n1.leafs.size()>1 && n2.leafs.size()>1) {
-					LinkedList<Leaf> l1 = (LinkedList<Leaf>) n1.leafs.clone();
-					LinkedList<Leaf> l2 = (LinkedList<Leaf>) n2.leafs.clone();
-					l2.remove(mult2/2);
-					l1.remove(mult/2);
-					return Compare(new Node(n1.id,l1), new Node(n2.id,l2));	
-				}
-				else return 0;
-			}
-		}
-	}
-	
-	private Pair<Integer,Integer> Compare2(Node n1, Node n2) {
+	private Pair<Integer,Integer> Compare(Node n1, Node n2) {
+		// Compares two nodes. Returns the difference between the number of crossings
+		// we would get if n1 was place on the left or on the right of n2.
+		
 		int u = 0;
 		int d = 0;
 		for (Leaf l1:n1.leafs) {
 			for (Leaf l2:n2.leafs) {
 				if (l2.id>l1.id) u++;
-			}
-		}
-		for (Leaf l1:n1.leafs) {
-			for (Leaf l2:n2.leafs) {
-				if (l2.id<l1.id) d++;
+				else if (l2.id<l1.id) d++;
 			}
 		}
 		return new Pair<Integer,Integer>(d,u);
 	}
 	
 	private int min(int[] score) {
+		// Returns the minimum of a list
+		
 		int res = score[0];
 		for (int i=1;i<score.length;i++) {
 			if (score[i]<res) res = score[i];
@@ -140,16 +65,20 @@ public class Heuristic {
 	}
 	
 	private Pair<ArrayList<Integer>, Integer> Minrec(ArrayList<Integer> lnode, int dep, int scorecum, int deep) {
+		// Recursively tries orders for the nodes and keeps the best configuration.
+		// The orders are created by comparing the node to be placed with the ones already placed. 
+		// When there are several equivalent positions for a node, recursion branches are created.
+		
 		if (dep ==nodes.length) return new Pair<ArrayList<Integer>, Integer>(lnode, scorecum);
 		if (deep>maxcount)return Minlin(lnode, dep+1, scorecum);
 		
-		int[] score = new int[lnode.size()+1];
+		int[] score = new int[lnode.size()+1]; // score keeps the number of crossings created at each position
 		ArrayList<Integer> sol = lnode;
 		
 		Node n = nodes[dep];
 		for (int j=0;j<lnode.size();j++) {
 			Node n2 = nodes[lnode.get(j)-1-nfixe];
-			Pair<Integer,Integer> p = Compare2(n,n2);
+			Pair<Integer,Integer> p = Compare(n,n2);
 			for (int k=j;k>=0;k--)score[k] += p.a;
 			for (int k=j+1;k<score.length;k++)score[k] +=p.b;
 		}
@@ -175,14 +104,16 @@ public class Heuristic {
 	}
 	
 	private Pair<ArrayList<Integer>, Integer> Minlin(ArrayList<Integer> lnode, int dep, int scorecum) {
+		// Computes an order by using the compare function, and placing each node to its optimal position in greedy fashion.
+		
 		if (dep ==nodes.length) return new Pair<ArrayList<Integer>, Integer>(lnode, scorecum);
 				
 		for (int i=dep;i<nodes.length;i++) {
-			int[] score = new int[lnode.size()+1];
+			int[] score = new int[lnode.size()+1]; // score keeps the number of crossings created at each position
 			Node n = nodes[i];
 			for (int j=0;j<lnode.size();j++) {
 				Node n2 = nodes[lnode.get(j)-1-nfixe];
-				Pair<Integer,Integer> p = Compare2(n,n2);
+				Pair<Integer,Integer> p = Compare(n,n2);
 				for (int k=j;k>=0;k--)score[k] += p.a;
 				for (int k=j+1;k<score.length;k++)score[k] +=p.b;
 			}
@@ -201,13 +132,15 @@ public class Heuristic {
 		return new Pair<ArrayList<Integer>, Integer>(lnode, scorecum);
 	}
 	
-	public String Minimize() throws FileNotFoundException {
+	public Tri<String,Integer,Long> Minimize(){
+		//Computes the order using the previous functions
+		
+		long start = System.currentTimeMillis();
 		ArrayList<Integer> lnode = new ArrayList<Integer>();
 		lnode.add(nodes[0].id + 1 + nfixe);
-		Pair<ArrayList<Integer>, Integer> p = Minrec(lnode, 1, 0,0);
+		Pair<ArrayList<Integer>, Integer> p = Minlin(lnode, 1, 0);
 		lnode = p.a;
 		int score = p.b;
-		System.out.println("Notre solution :" + score);
 
 		
 		String s = ""+lnode.get(0);
@@ -215,8 +148,10 @@ public class Heuristic {
 			s += "\n";
 			s += lnode.get(i);
 		}
+		long finish = System.currentTimeMillis();
 
-		return s;
+
+		return new Tri<String,Integer,Long>(s,score,finish-start);
 	}
 	
 

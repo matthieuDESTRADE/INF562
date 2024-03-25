@@ -7,6 +7,9 @@ import java.util.Random;
 public class GenerateRandom {
 	
 	public GenerateRandom(String path, int size,int prob) throws FileNotFoundException {
+		// generates a random graph of size 2*size.
+		// prob is used to control the density of the graph
+		
 		String s= "";
 		Random random = new Random();
 		

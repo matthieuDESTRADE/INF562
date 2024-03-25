@@ -6,6 +6,8 @@ public class Permutation {
 	int tot;
 	
 	public Permutation(int size) {
+		// Generates lists of indices that correspond to the permutations of [1,size] and stores them in perms
+		
 		tot = facto(size);
 		perms = new int[tot][size];
 		int[] array = new int[size];
