@@ -9,7 +9,7 @@ public class Main {
 		
 		// Computation of solutions
 		
-		for (int i=10;i<=10;i++) {
+		for (int i=44;i<=44;i++) {
 			Heuristic h = new Heuristic("data/heuristic-public/"+i+".gr");
 			String s = h.Minimize().a;
 			PrintWriter writer = new PrintWriter("sol-heuristic-public/"+i+".sol");
@@ -17,6 +17,7 @@ public class Main {
 			writer.close();
 			System.out.println(i);
 		}
+
 		
 		
 		/*

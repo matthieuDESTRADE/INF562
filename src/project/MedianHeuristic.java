@@ -75,8 +75,9 @@ public class MedianHeuristic {
 		}
 		long finish = System.currentTimeMillis();
 		
-		int crossings=0; // Here we compute the number of crossings, we do not take the related time into account.
 		
+		int crossings=0; // Here we compute the number of crossings, we do not take the related time into account.
+		/*
 		for (int i=0;i<indices.size();i++) {
 			int idnode = indices.get(i);
 			for (int j = i+1;j<indices.size();j++) {
@@ -88,6 +89,7 @@ public class MedianHeuristic {
 				}
 			 }
 		}
+		*/
 		return new Tri<String,Integer,Long>(s,crossings,finish-start);
 	}
 
